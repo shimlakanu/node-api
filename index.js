@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const supabase = require('./supabaseClient');
 const app = express();
@@ -5,21 +6,13 @@ app.use(express.json());
 const port = 3000;
 
 
-// GET to get the resource
-// PUT to update
-// POST to Insert
-// DELETE to delete
-
-
-
-// (1) fetching the value of "user" table:
+// (1) fetching(to get the resource) the value of "user" table:
 app.get('/user', async (req, res) => {
     const { data, error } = await supabase
         .from('user')
         .select();
-    // console.log(data,error);
     if (!error) res.json(data);
-    else console.log("no such table exists");
+    else res.send("no such table exists");
 })
 
 // (2) fetching the value of "country" table:
@@ -28,41 +21,48 @@ app.get('/country', async (req, res) => {
         .from('country')
         .select();
     if (!error) res.json(data);
-    else console.log("no such table exists");
+    else res.send("no such table exists");
 })
 
 
 // (3) fetching the tuples with dynamic user_id":
+// localhost:3000/user/60
 app.get('/user/:id', async (req, res) => {
     const id = parseInt(req.params.id);
     const { data, error } = await supabase
         .from('user')
-        .select();
-    var flag = 0;
+        .select()
+        .eq('id', id);
     if (!error) {
-        for (let i = 0; i < data.length; i++) {
-            if (id === data[i].id) {
-                res.json(data[i]);
-                flag = 1;
-            }
-        }
+        res.json(data);
     }
-    if (!flag && !error) res.send("no such tuple having this id exists");
+    else {
+        res.send("no such id exists");
+    }
 })
+
 
 // (4) creating a new record/tuple in "country" table:
 app.post('/country', async (req, res) => {
+    const country_name = req.body.country_name;
+    const postcode = req.body.postcode;
+    const road_no = req.body.road_no;
     const { data, error } = await supabase
         .from('country')
-        .insert({ 'country_name': 'asdf', 'postcode': 194423, 'area': 15462.25 });
-    console.log('post okay');
+        .insert({ 'country_name': country_name, 'postcode': postcode, 'road_no': road_no });
+    res.send("posted successfully ");
 })
 
-// (5) creating a new record/tuple in "user" table:
+// (5) creating a new record/tuple in "user" table(to Insert):
 app.post('/user', async (req, res) => {
+    const id = req.body.id;
+    const created_at = req.body.created_at;
+    const name = req.body.name;
+    const age = req.body.age;
+
     const { data, error } = await supabase
         .from('user')
-        .insert({ 'id': 66, 'created_at': "2022-07-21 14:08:04+00", 'name': "asd", 'age': 15 });
+        .insert({ 'id': id, 'created_at': created_at, 'name': name, 'age': age });
     if (!error) res.send("done successfully");
 })
 
@@ -79,14 +79,15 @@ app.delete('/user/:id', async (req, res) => {
 })
 
 
-// (7) put method(updating the user info):
+// (7) put (to update) method(updating the user info):
 
-app.put('/user/:id', async (req, res) => {
-    const id = req.params.id;
+app.put('/user', async (req, res) => {
+    const prev_id = req.body.prev_id;
+    const new_id = req.body.new_id;
     const { data, error } = await supabase
         .from('user')
-        .update({ 'id': 20 })
-        .eq('id', id);
+        .update({ 'id': new_id })
+        .eq('id', prev_id);
     if (!error) res.send("done successfully");
 
 })
