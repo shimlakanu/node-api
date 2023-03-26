@@ -11,8 +11,14 @@ app.get('/user', async (req, res) => {
     const { data, error } = await supabase
         .from('user')
         .select();
-    if (!error) res.json(data);
-    else res.send("no such table exists");
+    if (!error)
+    { 
+        res.json(data); 
+    }
+    else 
+    { 
+        res.send("no such table exists"); 
+    }
 })
 
 // (2) fetching the value of "country" table:
@@ -20,8 +26,14 @@ app.get('/country', async (req, res) => {
     const { data, error } = await supabase
         .from('country')
         .select();
-    if (!error) res.json(data);
-    else res.send("no such table exists");
+    if (!error) 
+    {
+        res.json(data);
+    }
+    else 
+    {
+        res.send("no such table exists");
+    }
 })
 
 
@@ -33,10 +45,12 @@ app.get('/user/:id', async (req, res) => {
         .from('user')
         .select()
         .eq('id', id);
-    if (!error) {
+    if (!error) 
+    {
         res.json(data);
     }
-    else {
+    else 
+    {
         res.send("no such id exists");
     }
 })
@@ -47,6 +61,7 @@ app.post('/country', async (req, res) => {
     const country_name = req.body.country_name;
     const postcode = req.body.postcode;
     const road_no = req.body.road_no;
+    
     const { data, error } = await supabase
         .from('country')
         .insert({ 'country_name': country_name, 'postcode': postcode, 'road_no': road_no });
@@ -63,7 +78,10 @@ app.post('/user', async (req, res) => {
     const { data, error } = await supabase
         .from('user')
         .insert({ 'id': id, 'created_at': created_at, 'name': name, 'age': age });
-    if (!error) res.send("done successfully");
+    if (!error) 
+    {
+        res.send("done successfully");
+    }
 })
 
 
@@ -75,7 +93,10 @@ app.delete('/user/:id', async (req, res) => {
         .from('user')
         .delete()
         .eq('id', id);
-    if (!error) res.send("done successfully");
+        if (!error) 
+        {
+            res.send("done successfully");
+        }
 })
 
 
@@ -88,8 +109,10 @@ app.put('/user', async (req, res) => {
         .from('user')
         .update({ 'id': new_id })
         .eq('id', prev_id);
-    if (!error) res.send("done successfully");
-
+        if (!error) 
+        {
+            res.send("done successfully");
+        }
 })
 
 
